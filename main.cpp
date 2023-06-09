@@ -119,12 +119,6 @@ void displayInfo()
     cout << "请输入你的选择: ";
 }
 
-// Define a function to exit the game
-void exitGame()
-{
-    // TODO: Add your code here to exit the game
-}
-
 void displayMenu()
 {
     // Clear the screen
@@ -142,7 +136,7 @@ void displayMenu()
 }
 
 // Define a function to handle the user input
-void handleInput()
+bool handleInput()
 {
     char choice;
     cin >> choice;
@@ -154,22 +148,20 @@ void handleInput()
     case 'A':
         system("cls");
         startNewGame();
-        break;
+        return 0;
     case 'b': // Continue Game
     case 'B':
         system("cls");
         continueGame();
-        break;
+        return 0;
     case 'c': // Developer Info
     case 'C':
         system("cls");
         displayInfo();
-        handleInput();
-        break;
+        return handleInput();
     case 'd': // Exit
     case 'D':
-        exitGame();
-        break;
+        return 1;
     default: // Invalid input
         cout << "乱输入达咩达" << endl
              << endl
@@ -177,12 +169,13 @@ void handleInput()
         handleInput();
         break;
     }
+    return 0;
 }
 
 int main()
 {
     // 设置控制台标题
-    SetConsoleTitle(TEXT("俄罗斯方块-by jishux"));
+    SetConsoleTitle(TEXT("俄罗斯方块-by 林俊宏"));
     // 定义窗口区域结构体
     SMALL_RECT rect = {0, 0, 45, 35};
     // 把控制台窗口调整到rect指定的区域
@@ -192,8 +185,11 @@ int main()
         // Display the main menu
         displayMenu();
         // Handle the user input
-        handleInput();
+        if (handleInput())
+            break;
     }
+    system("cls");
+    cout << "下次再见了，朋友" << endl;
     cin.clear();
     cin.sync();
     cin.get();
