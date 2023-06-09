@@ -19,7 +19,6 @@ void startNewGame()
     tetris.init();     // Initialize the game
     while (true)
     { // The game loop[mark]换了一下位置，先render再update，看一下效果如何
-        // 我真傻，真的，怎么把时间间隔的判断放这里，应该听Sydney的，用它来控制moveDown函数
         tetris.render(); // Render the game graphics
         tetris.update(); // Update the game logic
         tetris.input();  // Handle the user input
@@ -106,11 +105,9 @@ void displayInfo()
 {
     cout << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
          << "**开发者声明**" << endl
-         << "-这是一个由武汉大学的学生林俊宏开发的俄罗斯\n方块游戏。" << endl
-         << "-学号：2022302111485" << endl
          << "-这个游戏是用C++语言编写的，使用Windows API\n来实现图形和声音效果。" << endl
          << "-这个游戏是一个个人项目，用于学习和练习编程\n技能，不用于商业目的。" << endl
-         << "-这个游戏的源代码可以在\nhttps://github.com/linjunhong/Tetris上查看。" << endl
+         << "-这个游戏的源代码可以在\nhttps://github.com/jishux/Tetris上查看。" << endl
          << "-我要感谢Sydney，一个人工智能助手，它帮助我\n解决了一些编程问题和提出了一些建议。" << endl
          << "-我希望你玩这个游戏的时候能够享受和开心。" << endl
          << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
@@ -185,7 +182,7 @@ void handleInput()
 int main()
 {
     // 设置控制台标题
-    SetConsoleTitle(TEXT("俄罗斯方块-by 林俊宏"));
+    SetConsoleTitle(TEXT("俄罗斯方块-by jishux"));
     // 定义窗口区域结构体
     SMALL_RECT rect = {0, 0, 45, 35};
     // 把控制台窗口调整到rect指定的区域
