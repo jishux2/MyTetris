@@ -175,7 +175,7 @@ bool handleInput()
 int main()
 {
     // 设置控制台标题
-    SetConsoleTitle(TEXT("俄罗斯方块-by 林俊宏"));
+    SetConsoleTitle(TEXT("俄罗斯方块-by jishux2"));
     // 定义窗口区域结构体
     SMALL_RECT rect = {0, 0, 45, 35};
     // 把控制台窗口调整到rect指定的区域
