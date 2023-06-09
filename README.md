@@ -13,4 +13,4 @@ A Tetris game written in C++ that runs on the console
 **输出开发者信息**  
 -好像泄漏个人信息了  
 **退出**  
--忘记做了  
+-完成了
