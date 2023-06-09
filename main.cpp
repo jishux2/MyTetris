@@ -107,7 +107,7 @@ void displayInfo()
          << "**开发者声明**" << endl
          << "-这个游戏是用C++语言编写的，使用Windows API\n来实现图形和声音效果。" << endl
          << "-这个游戏是一个个人项目，用于学习和练习编程\n技能，不用于商业目的。" << endl
-         << "-这个游戏的源代码可以在\nhttps://github.com/jishux/Tetris上查看。" << endl
+         << "-这个游戏的源代码可以在\nhttps://github.com/jishux2/Tetris上查看。" << endl
          << "-我要感谢Sydney，一个人工智能助手，它帮助我\n解决了一些编程问题和提出了一些建议。" << endl
          << "-我希望你玩这个游戏的时候能够享受和开心。" << endl
          << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
