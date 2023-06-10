@@ -84,9 +84,9 @@ void Tetris::init()
     hwnd = GetConsoleWindow();
     // Get the handle of the device context
     hdc = GetDC(hwnd);
-    drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——返回主菜单", RGB(0, 0, 0), RGB(255, 255, 255));
-    drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(0, 0, 0), RGB(255, 255, 255));
-    drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(0, 0, 0), RGB(255, 255, 255));
+    drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——返回主菜单", RGB(12, 12, 12), RGB(255, 255, 255));
+    drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
+    drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
     // Clear the board
     board.clearBoard();
     createBlock();
@@ -107,7 +107,7 @@ void Tetris::update()
         if (drawBtnAgain[i] && clock() - lastClick[i] >= 100)
         {
 
-            drawButton(button[i], RGB(0, 0, 0), RGB(255, 255, 255));
+            drawButton(button[i], RGB(12, 12, 12), RGB(255, 255, 255));
             drawBtnAgain[i] = 0;
         }
     }
@@ -115,9 +115,9 @@ void Tetris::update()
     if (drawProm && clock() - lastdraw >= 1000)
     {
         // 提示信息的延迟消除
-        HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 0));
+        HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
         SelectObject(hdc, hBrush);
-        HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+        HPEN hPen = CreatePen(PS_SOLID, 1, RGB(12, 12, 12));
         SelectObject(hdc, hPen);
         Rectangle(hdc, COLS * BLOCK_SIZE + 10, 360, COLS * BLOCK_SIZE + 140, 390);
         drawProm = 0;
@@ -150,23 +150,23 @@ void Tetris::update()
             if (drawAtFirst)
             {
                 // 写入按键提示
-                drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——返回主菜单", RGB(0, 0, 0), RGB(255, 255, 255));
-                drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(0, 0, 0), RGB(255, 255, 255));
-                drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(0, 0, 0), RGB(255, 255, 255));
+                drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——返回主菜单", RGB(12, 12, 12), RGB(255, 255, 255));
+                drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
+                drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
                 // 画出六个按键
                 for (int i = 0; i < 6; i++)
                 {
-                    drawButton(button[i], RGB(0, 0, 0), RGB(255, 255, 255));
+                    drawButton(button[i],RGB(12, 12, 12), RGB(255, 255, 255));
                 }
                 // draw the background ,the blocks accumulated ,etc. on the screen
                 board.draw(hdc);
-                drawText(COLS * BLOCK_SIZE + 10, 10, "Score: ", RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 30, to_string(score).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 60, "Level: ", RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 80, to_string(level).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 110, "Lines: ", RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 130, to_string(lines).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-                drawText(COLS * BLOCK_SIZE + 10, 480, "Next Block: ", RGB(255, 255, 255), RGB(0, 0, 0)); // 下一个方块的提示信息放到底部，更方便查看
+                drawText(COLS * BLOCK_SIZE + 10, 10, "Score: ", RGB(255, 255, 255), RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 30, to_string(score).c_str(), RGB(255, 255, 255),RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 60, "Level: ", RGB(255, 255, 255), RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 80, to_string(level).c_str(), RGB(255, 255, 255), RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 110, "Lines: ", RGB(255, 255, 255),RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 130, to_string(lines).c_str(), RGB(255, 255, 255), RGB(12, 12, 12));
+                drawText(COLS * BLOCK_SIZE + 10, 480, "Next Block: ", RGB(255, 255, 255), RGB(12, 12, 12)); // 下一个方块的提示信息放到底部，更方便查看
                 drawAtFirst = false;
             }
 #endif
@@ -181,13 +181,13 @@ void Tetris::render()
     {
         // draw the background ,the blocks accumulated ,etc. on the screen
         board.draw(hdc);
-        drawText(COLS * BLOCK_SIZE + 10, 10, "Score: ", RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 30, to_string(score).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 60, "Level: ", RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 80, to_string(level).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 110, "Lines: ", RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 130, to_string(lines).c_str(), RGB(255, 255, 255), RGB(0, 0, 0));
-        drawText(COLS * BLOCK_SIZE + 10, 480, "Next Block: ", RGB(255, 255, 255), RGB(0, 0, 0)); // 下一个方块的提示信息放到底部，更方便查看
+        drawText(COLS * BLOCK_SIZE + 10, 10, "Score: ", RGB(255, 255, 255), RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 30, to_string(score).c_str(), RGB(255, 255, 255), RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 60, "Level: ", RGB(255, 255, 255),RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 80, to_string(level).c_str(), RGB(255, 255, 255), RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 110, "Lines: ", RGB(255, 255, 255), RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 130, to_string(lines).c_str(), RGB(255, 255, 255), RGB(12, 12, 12));
+        drawText(COLS * BLOCK_SIZE + 10, 480, "Next Block: ", RGB(255, 255, 255), RGB(12, 12, 12)); // 下一个方块的提示信息放到底部，更方便查看
         drawAgain = 0;
     }
 }
@@ -211,7 +211,7 @@ void Tetris::input()
         {
         case 'a': // Move left
         case 'A':
-            drawButton('A', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('A', RGB(255, 255, 255), RGB(12, 12, 12));
             block.moveLeft();
             lastClick[0] = clock();
             drawBtnAgain[0] = 1;
@@ -219,7 +219,7 @@ void Tetris::input()
             break;
         case 'd': // Move right
         case 'D':
-            drawButton('D', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('D', RGB(255, 255, 255), RGB(12, 12, 12));
             block.moveRight();
             lastClick[1] = clock();
             drawBtnAgain[1] = 1;
@@ -227,7 +227,7 @@ void Tetris::input()
             break;
         case 's': // Move down faster
         case 'S':
-            drawButton('S', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('S', RGB(255, 255, 255), RGB(12, 12, 12));
             block.moveDown();
             lastClick[2] = clock();
             drawBtnAgain[2] = 1;
@@ -235,7 +235,7 @@ void Tetris::input()
             break;
         case 'w': // Rotate clockwise
         case 'W':
-            drawButton('W', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('W', RGB(255, 255, 255), RGB(12, 12, 12));
             block.rotate();
             lastClick[3] = clock();
             drawBtnAgain[3] = 1;
@@ -256,7 +256,7 @@ void Tetris::input()
             isPaused = 0;
             break;
         case 32: // Drop to the bottom
-            drawButton('\040', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('\040', RGB(255, 255, 255), RGB(12, 12, 12));
             while (!block.moveDown())
             {
                 // 好神奇的逻辑
@@ -267,7 +267,7 @@ void Tetris::input()
             break;
         case 'p': // Pause
         case 'P':
-            drawButton('P', RGB(255, 255, 255), RGB(0, 0, 0));
+            drawButton('P', RGB(255, 255, 255), RGB(12, 12, 12));
             isPaused = !isPaused;
             lastClick[5] = clock();
             drawBtnAgain[5] = 1;
@@ -280,7 +280,7 @@ void Tetris::input()
         // 在画了方块后操作，避免被覆盖
         if (preState == 0 && isPaused == 1) // mark,mark.未完成
         {
-            drawText(COLS * BLOCK_SIZE / 2 - 45, ROWS * BLOCK_SIZE / 2, "\040按任意键以继续\040", RGB(255, 255, 255), RGB(0, 0, 0));
+            drawText(COLS * BLOCK_SIZE / 2 - 45, ROWS * BLOCK_SIZE / 2, "\040按任意键以继续\040", RGB(255, 255, 255), RGB(12, 12, 12));
         }
         if (preState == 1 && isPaused == 0)
         {
@@ -373,7 +373,7 @@ void Tetris::drawText(int x, int y, const char *text, COLORREF bkColor, COLORREF
 void Tetris::drawButton()
 {
     // 绘制按钮，实现动态效果
-    HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 0));
+    HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
     SelectObject(hdc, hBrush);
     HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
     SelectObject(hdc, hPen);
@@ -392,7 +392,7 @@ void Tetris::drawButton()
     //  Set the text color to black
     SetTextColor(hdc, RGB(255, 255, 255));
     // Set the background color to white
-    SetBkColor(hdc, RGB(0, 0, 0));
+    SetBkColor(hdc, RGB(12, 12, 12));
     // Draw the text at the given position
     TextOutA(hdc, COLS * BLOCK_SIZE + 25, 265, "A", strlen("A"));
     TextOutA(hdc, COLS * BLOCK_SIZE + 75, 265, "S", strlen("S"));
@@ -493,13 +493,13 @@ void Tetris::saveGame()
         // Write the GameState object to the file
         destFile.write((char *)&gameState, sizeof(GameState));
         // Display a message to indicate the game is saved successfully
-        drawText(COLS * BLOCK_SIZE + 15, 360, "Game Saved!", RGB(255, 255, 255), RGB(0, 0, 0));
+        drawText(COLS * BLOCK_SIZE + 15, 360, "Game Saved!", RGB(255, 255, 255), RGB(12, 12, 12));
         lastdraw = clock();
         drawProm = 1;
     }
     catch (const std::exception &e)
     {
-        drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255), RGB(0, 0, 0));
+        drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255),RGB(12, 12, 12));
     }
     // Close the file
     destFile.close();
@@ -546,7 +546,7 @@ void Tetris::loadGame()
     }
     catch (const std::exception &e)
     {
-        drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255), RGB(0, 0, 0));
+        drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255), RGB(12, 12, 12));
     }
     // Close the file
     savedFile.close();
