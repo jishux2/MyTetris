@@ -63,12 +63,13 @@ void continueGame()
     }
     tetris.lastdraw = clock();
     tetris.drawAgain = 1;
-    tetris._drawAgain = 0;
+    tetris._drawAgain = 1; // 进入游戏时就应该立刻画一遍了
     for (int i = 0; i < 6; i++)
     {
         tetris.drawBtnAgain[i] = 1;
     }
     tetris.gameQuited = false;
+    tetris.isFirstBlock = false; // 注意继续游戏时已经不是第一个方块
 
     // Get the handle of the console window
     tetris.hwnd = GetConsoleWindow();
@@ -112,6 +113,8 @@ void displayInfo()
     system("cls");
     cout << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
          << "**开发者声明**" << endl
+         << "-这是一个由武汉大学的学生林俊宏开发的俄罗斯\n方块游戏。" << endl
+         << "-学号：2022302111485" << endl
          << "-这个游戏是用C++语言编写的，使用Windows API\n来实现图形和声音效果。" << endl
          << "-这个游戏是一个个人项目，用于学习和练习编程\n技能，不用于商业目的。" << endl
          << "-这个游戏的源代码可以在\nhttps://github.com/jishux2/MyTetris上查看。" << endl
@@ -180,7 +183,7 @@ bool handleInput()
 int main()
 {
     // 设置控制台标题
-    SetConsoleTitle(TEXT("俄罗斯方块-by jishxu2"));
+    SetConsoleTitle(TEXT("俄罗斯方块-by 林俊宏"));
     // 定义窗口区域结构体
     SMALL_RECT rect = {0, 0, 45, 36};
     // 把控制台窗口调整到rect指定的区域
