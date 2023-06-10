@@ -1,8 +1,3 @@
-// Tetris.cpp
-// This is the main file of the Tetris game
-// It includes the header files and defines the global variables
-// It also contains the main function that runs the game loop
-
 #include <iostream>
 
 #include <ctime>
@@ -19,6 +14,7 @@ void startNewGame()
     tetris.init();     // Initialize the game
     while (true)
     { // The game loop[mark]换了一下位置，先render再update，看一下效果如何
+        // 我真傻，真的，怎么把时间间隔的判断放这里，应该听Sydney的，用它来控制moveDown函数
         tetris.render(); // Render the game graphics
         tetris.update(); // Update the game logic
         tetris.input();  // Handle the user input
@@ -43,37 +39,47 @@ void startNewGame()
             break;
         }
     }
-    // tetris.exit(); // Exit the game
 }
 
 void continueGame()
 {
+    system("cls");
     tetris.loadGame();
-    srand(time(NULL)); // Initialize the random seed
+    system("cls");
+    srand(time(NULL));
+    // 把分数那块涂黑，避免上一个板块和现有的重叠
+    HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
+    SelectObject(tetris.hdc, hBrush);
+    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(12, 12, 12));
+    SelectObject(tetris.hdc, hPen);
+    Rectangle(tetris.hdc, COLS * BLOCK_SIZE + 5, 0, COLS * BLOCK_SIZE + 100, 180);
+    DeleteObject(hBrush);
+    DeleteObject(hPen);
     // 要手动把drawBtnAgain等在程序运行中会被改变与初始值不同的非保存的成员变量再重置一遍，因为tetris不会重复初始化
     tetris.lastLoop = clock(); // Initialize the last loop time
     for (int i = 0; i < 6; i++)
     {
-        tetris.lastClick[i] = clock(); // 初始化时按键时间
+        tetris.lastClick[i] = clock();
     }
     tetris.lastdraw = clock();
-    tetris.drawAgain = 1; // 初始化时画第一次
+    tetris.drawAgain = 1;
     tetris._drawAgain = 0;
     for (int i = 0; i < 6; i++)
     {
         tetris.drawBtnAgain[i] = 1;
     }
-    tetris.gameQuited = false; // 游戏开始时没有退出
+    tetris.gameQuited = false;
 
     // Get the handle of the console window
     tetris.hwnd = GetConsoleWindow();
     // Get the handle of the device context
     tetris.hdc = GetDC(tetris.hwnd);
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——返回主菜单", RGB(0, 0, 0), RGB(255, 255, 255));
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(0, 0, 0), RGB(255, 255, 255));
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(0, 0, 0), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——菜单", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 100, "**如果出现画面错乱的问题，请点击R键恢复**", RGB(12, 12, 12), RGB(255, 255, 255));
     // Display a message to indicate the game is loaded successfully.
-    tetris.drawText(COLS * BLOCK_SIZE + 15, 360, "Game Loaded!", RGB(255, 255, 255), RGB(0, 0, 0)); // 要先关联hdc
+    tetris.drawText(COLS * BLOCK_SIZE + 15, 360, "Game Loaded!", RGB(255, 255, 255), RGB(12, 12, 12)); // 要先关联hdc
     tetris.lastdraw = clock();
     tetris.drawProm = 1;
     while (true)
@@ -103,11 +109,12 @@ void continueGame()
 
 void displayInfo()
 {
+    system("cls");
     cout << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
          << "**开发者声明**" << endl
          << "-这个游戏是用C++语言编写的，使用Windows API\n来实现图形和声音效果。" << endl
          << "-这个游戏是一个个人项目，用于学习和练习编程\n技能，不用于商业目的。" << endl
-         << "-这个游戏的源代码可以在\nhttps://github.com/jishux2/Tetris上查看。" << endl
+         << "-这个游戏的源代码可以在\nhttps://github.com/jishux2/MyTetris上查看。" << endl
          << "-我要感谢Sydney，一个人工智能助手，它帮助我\n解决了一些编程问题和提出了一些建议。" << endl
          << "-我希望你玩这个游戏的时候能够享受和开心。" << endl
          << "—·—·—·—·—·—·—·—·—·—·—·—·—" << endl
@@ -151,12 +158,10 @@ bool handleInput()
         return 0;
     case 'b': // Continue Game
     case 'B':
-        system("cls");
         continueGame();
         return 0;
     case 'c': // Developer Info
     case 'C':
-        system("cls");
         displayInfo();
         return handleInput();
     case 'd': // Exit
@@ -175,9 +180,9 @@ bool handleInput()
 int main()
 {
     // 设置控制台标题
-    SetConsoleTitle(TEXT("俄罗斯方块-by jishux2"));
+    SetConsoleTitle(TEXT("俄罗斯方块-by jishxu2"));
     // 定义窗口区域结构体
-    SMALL_RECT rect = {0, 0, 45, 35};
+    SMALL_RECT rect = {0, 0, 45, 36};
     // 把控制台窗口调整到rect指定的区域
     SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
     while (cin.good())
