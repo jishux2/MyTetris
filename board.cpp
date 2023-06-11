@@ -99,20 +99,6 @@ void Board::clearBoard()
     }
 }
 
-// The method to check if the game is over
-bool Board::isGameOver()
-{
-    // Loop through each column of the top row
-    for (int j = 0; j < COLS; j++)
-    {
-        // If there is a filled cell, return true
-        if (grid[0][j] != 'N')
-            return true;
-    }
-    // If there is no filled cell, return false
-    return false;
-}
-
 // The method to check if a block is valid on the board
 bool Board::isValid(Block &block)
 {
