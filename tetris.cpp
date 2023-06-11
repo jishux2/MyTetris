@@ -45,14 +45,30 @@ Tetris::Tetris()
     {
         drawBtnAgain[i] = 1; // 初始化时都画一次，而不要和drawAgain一起判断
     }
-    isPaused = false;   // 游戏开始时不是暂停状态
-    gameQuited = false; // 游戏开始时没有退出
+    isPaused = false;    // 游戏开始时不是暂停状态
+    gameQuited = false;  // 游戏开始时没有退出
+    gameOver = false;    // 游戏开始时没有自然结束
+    isFirstBlock = true; // 游戏开始时是第一个方块
 }
 
 // 析构函数
 Tetris::~Tetris()
 {
     // 不做任何事情
+}
+
+// 复原游戏
+void Tetris::restore()
+{
+    // 复原游戏数据
+    score = 0;
+    level = 1;
+    speed = SPEED;
+    lines = 0;
+    drawProm = 0;
+    // 清空游戏面板
+    board.clearBoard();
+    createBlock(); // 新游戏开始时要创建方块
 }
 
 // 初始化游戏
@@ -73,18 +89,15 @@ void Tetris::init()
         lastClick[i] = clock(); // 初始化按键时间
     }
     lastdraw = clock();
-    score = 0;
-    level = 1;
-    speed = SPEED;
-    lines = 0;
-    drawAgain = 1; // 初始化时画第一次
-    _drawAgain = 0;
-    drawProm = 0;
+    drawAgain = 1;  // 初始化时画第一次
+    _drawAgain = 1; // 进入游戏时就应该立刻画一遍了
     for (int i = 0; i < 6; i++)
     {
         drawBtnAgain[i] = 1;
     }
-    gameQuited = false; // 游戏开始时没有退出
+    gameQuited = false;  // 游戏开始时没有退出
+    gameOver = false;    // 游戏开始时没有自然结束
+    isFirstBlock = true; // 游戏开始时是第一个方块
 
     // 获取控制台窗口句柄
     hwnd = GetConsoleWindow();
@@ -94,9 +107,6 @@ void Tetris::init()
     drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
     drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
     drawText(10, ROWS * BLOCK_SIZE + 100, "**如果出现画面错乱的问题，请点击R键恢复**", RGB(12, 12, 12), RGB(255, 255, 255));
-    // 清空游戏面板
-    board.clearBoard();
-    createBlock();
 }
 
 // 更新游戏逻辑
@@ -128,6 +138,8 @@ void Tetris::update()
         SelectObject(hdc, hPen);
         Rectangle(hdc, COLS * BLOCK_SIZE + 10, 360, COLS * BLOCK_SIZE + 140, 390);
         drawProm = 0;
+        DeleteObject(hBrush);
+        DeleteObject(hPen);
     }
 
     if (_drawAgain)
@@ -151,9 +163,16 @@ void Tetris::update()
             fallenBlock.erase(hdc);
             block.moveDown(); // 方块下移一格
             lastLoop = clock();
-            // 在屏幕上画出方块
-            block.draw(hdc);
-            fallenBlock.project(hdc); // 绘制方块下落后的位置
+            if (gameOver)
+            { // 如果游戏已经要结束了，就只画一次背景
+                board.draw(hdc);
+            }
+            else
+            {
+                // 在屏幕上画出方块
+                block.draw(hdc);
+                fallenBlock.project(hdc); // 绘制方块下落后的位置
+            }
         }
     }
 }
@@ -271,10 +290,13 @@ void Tetris::input()
             _drawAgain = true;
             break;
         }
-        fallenBlock = block; // 更新下落后的位置
-        // 在屏幕上画出方块
-        block.draw(hdc);
-        fallenBlock.project(hdc);
+        if (!gameOver) // 如果游戏要结束了，这里也不要再画了
+        {
+            fallenBlock = block; // 更新下落后的位置
+            fallenBlock.project(hdc);
+            // 在屏幕上画出方块
+            block.draw(hdc);
+        }
         // 在画了方块后操作，避免被覆盖
         if (preState == false && isPaused == true) // 如果刚刚进入暂停状态，就显示提示信息
         {
@@ -297,17 +319,9 @@ void Tetris::exit()
     gameQuited = true;
 }
 
-// 检查游戏是否结束
-bool Tetris::isGameOver()
-{
-    // 返回游戏面板的isGameOver方法的结果
-    return board.isGameOver();
-}
-
 // 创建一个新的方块
 void Tetris::createBlock()
 {
-    static bool isFirstBlock = true; // 检查是否是第一个方块
     if (isFirstBlock)
     {
         // 随机生成一个类型给第一个方块
@@ -321,19 +335,17 @@ void Tetris::createBlock()
         // 将下一个类型更新为当前类型
         block = nextBlock;
     }
-    // 随机生成一个类型给下一个方块
-    int nextType = rand() % 7;
-    // 提前生成下一个方块对象
-    nextBlock = Block(COLS / 2 - 2, 0, nextType);
-    fallenBlock = block;
-    drawAgain = true;  // 每次创建新方块都要再画一次
-    _drawAgain = true; // 每次创建新方块都立刻重画一次，并重新计时，否则每次看到方块都是已经落下一格的
-    // 检查新的方块在游戏面板上是否有效 [mark]原来这里也会导致强退
-    // if (!board.isValid(block))
-    // {
-    //     // If not, exit the game
-    //     exit();
-    // }
+    gameOver = !board.isValid(block);
+    if (!gameOver)
+    { // 如果游戏要结束了，下面这些都不用做，尤其不要更新下一个方块，要给玩家看到为什么下一个方块导致游戏结束
+        // 随机生成一个类型给下一个方块
+        int nextType = rand() % 7;
+        // 提前生成下一个方块对象
+        nextBlock = Block(COLS / 2 - 2, 0, nextType);
+        fallenBlock = block;
+        drawAgain = true;  // 每次创建新方块都要再画一次
+        _drawAgain = true; // 每次创建新方块都立刻重画一次，并重新计时，否则每次看到方块都是已经落下一格的
+    }
 }
 
 // 播放声音效果
