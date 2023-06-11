@@ -5,24 +5,23 @@
 #include "tetris.h"
 
 extern Tetris tetris;
+extern void startNewGame();
 
 using namespace std;
 
-void startNewGame()
-{
-    srand(time(NULL)); // Initialize the random seed
-    tetris.init();     // Initialize the game
+void tetrisRun()
+{ // 把startNewGame和continueGame中的重合部分封装起来，作为游戏运行函数
     while (true)
     { // The game loop[mark]换了一下位置，先render再update，看一下效果如何
         // 我真傻，真的，怎么把时间间隔的判断放这里，应该听Sydney的，用它来控制moveDown函数
         tetris.render(); // Render the game graphics
         tetris.update(); // Update the game logic
         tetris.input();  // Handle the user input
-        if (tetris.isGameOver())
+        if (tetris.gameOver)
         {
             // 游戏结束时弹出提示框
             //  Show a message box with the final score
-            int result = MessageBoxA(tetris.hwnd, ("你的得分是 " + to_string(tetris.score) + "\n选择\"是\"以重启游戏；\n或选择\"否\"以返回主菜单").c_str(), "游戏结束", MB_YESNO | MB_ICONINFORMATION);
+            int result = MessageBoxA(tetris.hwnd, ("游戏已无法继续\n你的得分是 " + to_string(tetris.score) + "\n选择\"是\"以重启游戏；\n或选择\"否\"以返回主菜单").c_str(), "游戏结束", MB_YESNO | MB_ICONINFORMATION);
             switch (result)
             {
             case IDYES: // User chose "Yes"
@@ -41,71 +40,25 @@ void startNewGame()
     }
 }
 
+void startNewGame()
+{
+    srand(time(NULL)); // Initialize the random seed
+    tetris.init();     // Initialize the game
+    tetris.restore();  // Restore the game
+    tetrisRun();
+}
+
 void continueGame()
 {
     system("cls");
     tetris.loadGame();
     system("cls");
     srand(time(NULL));
-    // 把分数那块涂黑，避免上一个板块和现有的重叠
-    HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
-    SelectObject(tetris.hdc, hBrush);
-    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(12, 12, 12));
-    SelectObject(tetris.hdc, hPen);
-    Rectangle(tetris.hdc, COLS * BLOCK_SIZE + 5, 0, COLS * BLOCK_SIZE + 100, 180);
-    DeleteObject(hBrush);
-    DeleteObject(hPen);
-    // 要手动把drawBtnAgain等在程序运行中会被改变与初始值不同的非保存的成员变量再重置一遍，因为tetris不会重复初始化
-    tetris.lastLoop = clock(); // Initialize the last loop time
-    for (int i = 0; i < 6; i++)
-    {
-        tetris.lastClick[i] = clock();
-    }
-    tetris.lastdraw = clock();
-    tetris.drawAgain = 1;
-    tetris._drawAgain = 1; // 进入游戏时就应该立刻画一遍了
-    for (int i = 0; i < 6; i++)
-    {
-        tetris.drawBtnAgain[i] = 1;
-    }
-    tetris.gameQuited = false;
-    tetris.isFirstBlock = false; // 注意继续游戏时已经不是第一个方块
-
-    // Get the handle of the console window
-    tetris.hwnd = GetConsoleWindow();
-    // Get the handle of the device context
-    tetris.hdc = GetDC(tetris.hwnd);
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——菜单", RGB(12, 12, 12), RGB(255, 255, 255));
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
-    tetris.drawText(10, ROWS * BLOCK_SIZE + 100, "**如果出现画面错乱的问题，请点击R键恢复**", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.init();
+    tetris.drawProm = 1;
     // Display a message to indicate the game is loaded successfully.
     tetris.drawText(COLS * BLOCK_SIZE + 15, 360, "Game Loaded!", RGB(255, 255, 255), RGB(12, 12, 12)); // 要先关联hdc
-    tetris.lastdraw = clock();
-    tetris.drawProm = 1;
-    while (true)
-    {
-        tetris.render();
-        tetris.update();
-        tetris.input();
-        if (tetris.isGameOver())
-        {
-            int result = MessageBoxA(tetris.hwnd, ("你的得分是 " + to_string(tetris.score) + "\n选择\"是\"以重启游戏；\n或选择\"否\"以返回主菜单").c_str(), "游戏结束", MB_YESNO | MB_ICONINFORMATION);
-            switch (result)
-            {
-            case IDYES:
-                startNewGame();
-                break;
-            case IDNO:
-                break;
-            }
-            break;
-        }
-        if (tetris.gameQuited)
-        {
-            break;
-        }
-    }
+    tetrisRun();
 }
 
 void displayInfo()
