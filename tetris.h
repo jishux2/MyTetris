@@ -25,20 +25,21 @@ private:
     bool drawBtnAgain[6]; // 判断是否要重画按键。为了更流畅的视觉效果，让每个按键的变色各自独立
     bool isPaused;        // 判断游戏是否暂停
     bool gameQuited;      // 判断是否强行退出游戏
+    bool gameOver;        // 判断游戏是否自然结束
+    bool isFirstBlock;    // 检查是否是第一个方块
 
 public:
     Tetris();                                                                            // The default constructor
     ~Tetris();                                                                           // The destructor
+    void restore();                                                                      // The method to restore the game
     void init();                                                                         // The method to initialize the game
     void update();                                                                       // The method to update the game logic
     void render();                                                                       // The method to render the game graphics
     void input();                                                                        // The method to handle the user input
     void exit();                                                                         // The method to exit the game
-    bool isGameOver();                                                                   // The method to check if the game is over
     void createBlock();                                                                  // The method to create a new block
     void playSound(int type);                                                            // The method to play sound effects
     void drawText(int x, int y, const char *text, COLORREF bkColor, COLORREF textColor); // The method to draw text on the screen
-    void drawButton();                                                                   // 画出所有按键
     void drawButton(char button, COLORREF BKGCOLOR, COLORREF PENCOLOR);                  // 画出按键
     void saveGame();                                                                     // 保存游戏内容
     void loadGame();                                                                     // 加载游戏内容
@@ -46,6 +47,7 @@ public:
     friend class Block;                                                                  // Declare Block as a friend class
     friend void startNewGame();                                                          // 声明创建游戏函数为友元函数
     friend void continueGame();                                                          // 声明继续游戏函数为友元函数
+    friend void tetrisRun();                                                             // 声明运行游戏函数为友元函数
 };
 
 #endif
