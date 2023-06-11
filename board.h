@@ -20,7 +20,6 @@ public:
     void clearRow(int row);         // The method to clear a row
     void dropRows(int row);         // The method to drop the rows above a row
     void clearBoard();              // The method to clear the board
-    bool isGameOver();              // The method to check if the game is over
     bool isValid(Block &block);     // The method to check if a block is valid on the board
     void placeBlock(Block &block);  // The method to place a block on the board
     void removeBlock(Block &block); // The method to remove a block from the board
