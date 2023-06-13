@@ -24,7 +24,6 @@ public:
     void placeBlock(Block &block);  // The method to place a block on the board
     void removeBlock(Block &block); // The method to remove a block from the board
     void draw(HDC hdc);             // The method to draw the blocks accumulated ,the background and the next block on the screen
-    friend class Block;             // Declare Block as a friend class
     friend class Tetris;            // Declare Tetris as a friend class
 };
 
