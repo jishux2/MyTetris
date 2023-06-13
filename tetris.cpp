@@ -26,7 +26,7 @@ Tetris::Tetris()
     {
         lastClick[i] = clock(); // 初始化按键时间
     }
-    lastdraw = clock();
+    lastDraw = clock();
     score = 0;     // 初始化分数
     level = 1;     // 初始化等级
     speed = SPEED; // 初始化速度
@@ -74,6 +74,7 @@ void Tetris::restore()
 // 初始化游戏
 void Tetris::init()
 {
+    srand(time(NULL));
     // 把分数那块涂黑，避免上一个板块和现有的重叠
     HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
     SelectObject(hdc, hBrush);
@@ -88,7 +89,7 @@ void Tetris::init()
     {
         lastClick[i] = clock(); // 初始化按键时间
     }
-    lastdraw = clock();
+    lastDraw = clock();
     drawAgain = 1;  // 初始化时画第一次
     _drawAgain = 1; // 进入游戏时就应该立刻画一遍了
     for (int i = 0; i < 6; i++)
@@ -103,10 +104,6 @@ void Tetris::init()
     hwnd = GetConsoleWindow();
     // 获取设备上下文句柄
     hdc = GetDC(hwnd);
-    drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——菜单", RGB(12, 12, 12), RGB(255, 255, 255));
-    drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
-    drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
-    drawText(10, ROWS * BLOCK_SIZE + 100, "**如果出现画面错乱的问题，请点击R键恢复**", RGB(12, 12, 12), RGB(255, 255, 255));
 }
 
 // 更新游戏逻辑
@@ -129,7 +126,7 @@ void Tetris::update()
         }
     }
 
-    if (drawProm && clock() - lastdraw >= 1000)
+    if (drawProm && clock() - lastDraw >= 1000)
     {
         // 提示信息的延迟消除
         HBRUSH hBrush = CreateSolidBrush(RGB(12, 12, 12));
@@ -245,7 +242,7 @@ void Tetris::input()
             isPaused = false;
             break;
         case 27: // 退出游戏
-            result = MessageBoxA(hwnd, "游戏已暂停\n选择\"是\"以保存游戏并继续；\n或选择\"否\"以返回主菜单", "提示", MB_YESNO | MB_ICONINFORMATION);
+            result = MessageBoxA(hwnd, "游戏已暂停\n选择\"是\"以保存游戏；\n选择\"否\"以返回主菜单；\n或选择\"取消\"以继续游戏", "提示", MB_YESNOCANCEL | MB_ICONINFORMATION);
             switch (result)
             {
             case IDYES: // 用户选择了"是"
@@ -255,6 +252,8 @@ void Tetris::input()
             case IDNO: // 用户选择了"否"
                 exit();
                 break;
+            case IDCANCEL: // 用户选择"取消"
+                break;     // 什么都不做，继续游戏
             }
             isPaused = false;
             break;
@@ -436,12 +435,14 @@ void Tetris::drawButton(char button, COLORREF bkgColor, COLORREF textColor)
 // 保存游戏
 void Tetris::saveGame()
 {
-    // Create a GameState object and assign the current game state to it
+    // 创建一个GameState类型的对象，用于存储当前的游戏状态
     GameState gameState;
+    // 将当前的分数、等级、速度、消除行数等赋值给gameState对象的相应成员变量
     gameState.score = score;
     gameState.level = level;
     gameState.speed = speed;
     gameState.lines = lines;
+    // 将当前的棋盘网格数据复制给gameState对象的grid二维数组
     for (int i = 0; i < ROWS; i++)
     {
         for (int j = 0; j < COLS; j++)
@@ -449,56 +450,62 @@ void Tetris::saveGame()
             gameState.grid[i][j] = board.grid[i][j];
         }
     }
+    // 将当前的方块和下一个方块对象赋值给gameState对象的block和nextBlock成员变量
     gameState.block = block;
     gameState.nextBlock = nextBlock;
 
-    // Create an destFiletream object and open a file named "save.dat" in binary mode
+    // 创建一个ofstream类型的对象，用于向文件写入数据
     ofstream destFile;
     try
     {
+        // 以二进制模式打开一个名为"save.dat"的文件，如果文件不存在则创建它
         destFile.open("/C++/tetris_sydney/save.dat", ios_base::binary | ios_base::out);
+        // 如果打开或创建文件失败，抛出一个运行时错误异常
         if (!destFile)
         {
             throw runtime_error("Error: Failed to create a file!");
         }
-        // Write the GameState object to the file
+        // 将gameState对象转换为字节流，写入到文件中
         destFile.write((char *)&gameState, sizeof(GameState));
-        // Display a message to indicate the game is saved successfully
+        // 在屏幕上显示一条消息，提示用户游戏已经保存成功
         drawText(COLS * BLOCK_SIZE + 15, 360, "Game Saved!", RGB(255, 255, 255), RGB(12, 12, 12));
-        lastdraw = clock();
+        // 记录当前的时间，用于控制提示消息的显示时长
+        lastDraw = clock();
+        // 表示需要在一定时间后擦除提示消息
         drawProm = 1;
     }
-    catch (const std::exception &e)
+    catch (const std::exception &e) // 捕获异常
     {
+        // 在屏幕上显示异常信息
         drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255), RGB(12, 12, 12));
     }
-    // Close the file
+    // 关闭文件
     destFile.close();
 }
 
 // 载入游戏
 void Tetris::loadGame()
 {
-    char *fileName = new char[256];
-    char *fileAddress = new char[256];
-    strcpy(fileAddress, "/C++/tetris_sydney/");
-    // Create a GameState object to store the loaded game state
+    char *fileName = new char[256];             // 存储文件名
+    char *fileAddress = new char[256];          // 存储文件地址
+    strcpy(fileAddress, "/C++/tetris_sydney/"); // 将文件地址的前缀复制到fileAddress中
+    // 创建一个GameState对象，用于存储从文件中读取的游戏状态
     GameState gameState;
-    // Create an ifstream object and open a file named "save.dat" in binary mode
+    // 创建一个ifstream对象，并以二进制模式打开文件
     ifstream savedFile;
-    cout << "请输入保存的文件名：";
-    cin.getline(fileName, strlen(fileName));
-    strcat(fileAddress, fileName);
+    cout << "请输入保存的文件名：";          // 输出提示信息
+    cin.getline(fileName, strlen(fileName)); // 从标准输入读取一行字符串，作为文件名
+    strcat(fileAddress, fileName);           // 将文件名拼接到文件地址后面
     try
     {
-        savedFile.open(fileAddress, ios_base::binary | ios_base::in);
-        if (!savedFile)
+        savedFile.open(fileAddress, ios_base::binary | ios_base::in); // 以二进制和输入模式打开指定的文件
+        if (!savedFile)                                               // 如果打开失败
         {
-            throw runtime_error("Error: Failed to load the file!");
+            throw runtime_error("Error: Failed to load the file!"); // 抛出一个运行时错误异常，包含错误信息
         }
-        // Write the GameState object to the file
+        // 从文件中读取sizeof(GameState)个字节，存储到gameState对象中
         savedFile.read((char *)&gameState, sizeof(GameState));
-        // Assign the loaded game state to the current game state
+        // 将读取到的游戏状态赋值给当前的游戏状态
         score = gameState.score;
         level = gameState.level;
         speed = gameState.speed;
@@ -507,20 +514,24 @@ void Tetris::loadGame()
         {
             for (int j = 0; j < COLS; j++)
             {
-                board.grid[i][j] = gameState.grid[i][j];
+                board.grid[i][j] = gameState.grid[i][j]; // 将读取到的棋盘格子赋值给当前的棋盘格子
             }
         }
-        block = gameState.block;
-        nextBlock = gameState.nextBlock;
-        fallenBlock = block;
+        block = gameState.block;         // 当前方块
+        nextBlock = gameState.nextBlock; // 次方块
+        fallenBlock = block;             // 当前方块在底部的投影
+        lastDraw = clock();
+        drawProm = 1;
     }
-    catch (const std::exception &e)
+    catch (const std::exception &e) // 捕获异常
     {
-        drawText(COLS * BLOCK_SIZE + 15, 360, e.what(), RGB(255, 255, 255), RGB(12, 12, 12));
+        // 在屏幕上绘制异常信息，使用白色文字和黑色背景
+        drawText(100, 360, e.what(), RGB(12, 12, 12), RGB(255, 255, 255));
+        gameQuited = 1;
     }
-    // Close the file
+    // 关闭文件流对象
     savedFile.close();
-    delete[] fileName;
+    delete[] fileName; // 释放动态分配的字符数组内存空间
 }
 
 Tetris tetris; // The Tetris game object
