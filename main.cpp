@@ -10,55 +10,65 @@ extern void startNewGame();
 using namespace std;
 
 void tetrisRun()
-{ // 把startNewGame和continueGame中的重合部分封装起来，作为游戏运行函数
+{ // 运行俄罗斯方块游戏的主要逻辑
+    // 绘制按键规则，若放在init函数里会导致绘画失误，若单独写到continueGame函数里会增加冗余代码，最好的方法还是放在这里
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 10, "按键规则：\040\040ESC——菜单", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 40, "A——左移\040\040D——右移\040\040S——下移", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 70, "W——旋转\040\040Space——下落\040\040P——暂停", RGB(12, 12, 12), RGB(255, 255, 255));
+    tetris.drawText(10, ROWS * BLOCK_SIZE + 100, "**如果出现画面错乱的问题，请点击R键恢复**", RGB(12, 12, 12), RGB(255, 255, 255));
     while (true)
-    { // The game loop[mark]换了一下位置，先render再update，看一下效果如何
-        // 我真傻，真的，怎么把时间间隔的判断放这里，应该听Sydney的，用它来控制moveDown函数
-        tetris.render(); // Render the game graphics
-        tetris.update(); // Update the game logic
-        tetris.input();  // Handle the user input
+    {                    // 用一个无限循环来实现游戏循环
+        tetris.render(); // 调用Tetris类的render方法，绘制游戏画面
+        tetris.update(); // 调用Tetris类的update方法，更新游戏状态
+        tetris.input();  // 调用Tetris类的input方法，处理用户输入
         if (tetris.gameOver)
         {
-            // 游戏结束时弹出提示框
-            //  Show a message box with the final score
+            // 如果Tetris类的gameOver属性为真，说明游戏已经结束
+            // 弹出一个消息框，显示最终得分，并询问用户是否重新开始游戏
             int result = MessageBoxA(tetris.hwnd, ("游戏已无法继续\n你的得分是 " + to_string(tetris.score) + "\n选择\"是\"以重启游戏；\n或选择\"否\"以返回主菜单").c_str(), "游戏结束", MB_YESNO | MB_ICONINFORMATION);
             switch (result)
             {
-            case IDYES: // User chose "Yes"
-                // Restart the game
+            case IDYES: // 如果用户选择了"是"
+                // 调用startNewGame函数，重新开始游戏
                 startNewGame();
                 break;
-            case IDNO: // User chose "No"
+            case IDNO: // 如果用户选择了"否"
+                // 不做任何操作
                 break;
             }
-            break; // Check if the game is over
+            break; // 跳出循环，结束函数
         }
         if (tetris.gameQuited)
         {
-            break;
+            // 如果Tetris类的gameQuited属性为真，说明用户已经退出游戏
+            break; // 跳出循环，结束函数
         }
     }
 }
 
 void startNewGame()
 {
-    srand(time(NULL)); // Initialize the random seed
-    tetris.init();     // Initialize the game
-    tetris.restore();  // Restore the game
+    tetris.init();    // Initialize the game
+    tetris.restore(); // Restore the game
     tetrisRun();
 }
 
-void continueGame()
+bool continueGame()
 {
+    tetris.init();
     system("cls");
     tetris.loadGame();
-    system("cls");
-    srand(time(NULL));
-    tetris.init();
-    tetris.drawProm = 1;
-    // Display a message to indicate the game is loaded successfully.
-    tetris.drawText(COLS * BLOCK_SIZE + 15, 360, "Game Loaded!", RGB(255, 255, 255), RGB(12, 12, 12)); // 要先关联hdc
-    tetrisRun();
+    if (!tetris.gameQuited)
+    {
+        system("cls");
+        tetris.drawText(COLS * BLOCK_SIZE + 15, 360, "Game Loaded!", RGB(255, 255, 255), RGB(12, 12, 12));
+        tetrisRun();
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void displayInfo()
@@ -114,8 +124,21 @@ bool handleInput()
         return 0;
     case 'b': // Continue Game
     case 'B':
-        continueGame();
-        return 0;
+        if (continueGame())
+        {
+            return 0;
+        }
+        else
+        {
+            cout << endl
+                 << "(a) 新游戏" << endl
+                 << "(b) 继续游戏" << endl
+                 << "(c) 开发者信息" << endl
+                 << "(d) 退出" << endl;
+            // Display the prompt
+            cout << "请输入你的选择: ";
+            return handleInput();
+        }
     case 'c': // Developer Info
     case 'C':
         displayInfo();
