@@ -13,7 +13,7 @@ private:
     PAINTSTRUCT ps;       // The paint structure
     clock_t lastLoop;     // The time of the last loop
     clock_t lastClick[6]; // The time of the last click of each button
-    clock_t lastdraw;     // 上一次在屏幕写入提示信息的时间(用于ESC在屏幕上输出信息后的延迟恢复)
+    clock_t lastDraw;     // 上一次在屏幕写入提示信息的时间(用于ESC在屏幕上输出信息后的延迟恢复)
     int score;            // The score of the game
     int level;            // The level of the game
     int speed;            // The speed of the game
@@ -44,9 +44,7 @@ public:
     void saveGame();                                                                     // 保存游戏内容
     void loadGame();                                                                     // 加载游戏内容
     friend class Board;                                                                  // Declare Board as a friend class
-    friend class Block;                                                                  // Declare Block as a friend class
-    friend void startNewGame();                                                          // 声明创建游戏函数为友元函数
-    friend void continueGame();                                                          // 声明继续游戏函数为友元函数
+    friend bool continueGame();                                                          // 声明继续游戏函数为友元函数
     friend void tetrisRun();                                                             // 声明运行游戏函数为友元函数
 };
 
