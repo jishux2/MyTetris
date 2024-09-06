@@ -14,6 +14,5 @@ A Tetris game written in C++ that runs on the console
 ## **保存和载入游戏**  
 - 基于文件输入和输出流实现  
 ## **输出开发者信息**  
-- 好像泄漏个人信息了  
 ## **退出**  
 - 完成了
